@@ -121,24 +121,26 @@ public class SSLHttpClient {
         File file=new File(filePath);
         FileBody fileBody = new FileBody(file);
         builderMaster.addPart("jpg", fileBody);
-        builderMaster.addTextBody("FLW_CODE","20170906001");
+        builderMaster.addTextBody("FLW_CODE","20170906004");
         try {
             KeyStore keyStore = Certifacate.getKeyStore("1234567890", "D:/public/client.jks");
             X509Certificate clientCertificate = Certifacate.getCertificateByKeystore(keyStore, "client");
             PrivateKey privateKey = Certifacate.getPrivateKey(keyStore, "client", "1234567890");
             byte[] sign = Certifacate.sign(clientCertificate, privateKey, File2byte(filePath));
-            System.out.println("CID:"+clientCertificate.getSerialNumber());
+            System.out.println("KEY-CID:"+clientCertificate.getSerialNumber());
+            builderMaster.addTextBody("CID",clientCertificate.getSerialNumber().toString());
             System.out.println(util.Base64.encode(sign));
             builderMaster.addTextBody("signature", util.Base64.encode(sign));
             Security.addProvider(new BouncyCastleProvider());
             X509Certificate certificateByCertPath = Certifacate.getCertificateByCertPath("D:/public/client.cer", "X509");
             boolean verify = Certifacate.verify(certificateByCertPath, File2byte(filePath), sign);
+            System.out.println("CER-CID:"+certificateByCertPath.getSerialNumber());
             System.out.println("Verify result:"+verify);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        builderMaster.addTextBody("name","1234567899001123adfas1241321dfase");
-        builderMaster.addTextBody("DESCRIPTION","1234567899001123adfas1241321dfase");
+        builderMaster.addTextBody("name","5555");
+        builderMaster.addTextBody("DESCRIPTION","JackIce test");
         HttpEntity entity = builderMaster.build();
         httpPost.setEntity(entity);
         HttpResponse httpResponse;
@@ -240,7 +242,7 @@ public class SSLHttpClient {
         String trustStoreFile = "D:\\github_ucontent\\NoCAAndUserKeytool\\client.truststore";
         String trustStorePass = "1234567890";
 
-        String filePath = "D:/test/2.jpg";
+        String filePath = "D:/test/3.jpg";
 
         SSLHttpClient obj = new SSLHttpClient();
         try {
